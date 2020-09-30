@@ -92,7 +92,7 @@ class Company {
 
         const { query, values } = partialUpdate('companies', data, 'handle', handle);
 
-        const result = db.query(query, values);
+        const result = await db.query(query, values);
 
         if (result.rows.length === 0) {
             throw new ExpressError(`Error: No company found/updated with given handle of ${handle}.`, 404);
