@@ -1,5 +1,3 @@
-\c jobly-test
-
 DROP TABLE IF EXISTS companies CASCADE;
 DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS users;
@@ -8,7 +6,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE companies (
    handle text PRIMARY KEY,
    name text NOT NULL UNIQUE,
-   num_employees integer,
+   num_employees float,
    description text,
    logo_url text
 );
