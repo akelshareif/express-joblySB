@@ -12,11 +12,14 @@ class Company {
          * - If min_emps and/or max_emps are provided, returns companies with given range
          * - If min_emps > max_emps, throws 400 error with message
          * - If no parameters are provided, return all companies
-         * Returns array of companies matching query-string parameters
+         * Returns array of companies
          */
 
-        if (min_emps > max_emps) {
-            throw new ExpressError('Error: Maximum employees must be greater than or equal to than minimum employees.', 400);
+        if (min_emps > max_emps || min_emps < 0 || max_emps < 0) {
+            throw new ExpressError(
+                'Error: Maximum and Minimum employees must be a positive integer and Max must be greater-than or equal-to Min.',
+                400
+            );
         }
 
         if (search) {
@@ -29,6 +32,13 @@ class Company {
                 [search, min_emps, max_emps]
             );
 
+            if (searchResults.rows.length === 0) {
+                throw new ExpressError(
+                    `Error: No companies found with given parameters - Search Pattern: ${search}, Minimum Employess: ${min_emps}, Max Employees: ${max_emps}.`,
+                    404
+                );
+            }
+
             return searchResults.rows;
         } else {
             const allResults = await db.query(
@@ -38,6 +48,10 @@ class Company {
                 [min_emps, max_emps]
             );
 
+            if (allResults.rows.length === 0) {
+                throw new ExpressError(`Error: No companies found in database.`, 404);
+            }
+
             return allResults.rows;
         }
     }
@@ -46,8 +60,8 @@ class Company {
         /**
          * Given req.body as parameter
          * - Creates and saves a company to db with data destructured from req.body
-         * - Data from req.body is validated via JSONSchema prior to this fxn call
-         * - Returns object containing given company data
+         * - Data from req.body is validated via JSONSchema prior to method call
+         * Returns object containing newly added company info
          */
 
         const result = await db.query(
@@ -119,7 +133,7 @@ class Company {
         }
 
         return {
-            message: `Company ${handle} was deleted`,
+            message: `Company ${handle} was deleted.`,
         };
     }
 }
