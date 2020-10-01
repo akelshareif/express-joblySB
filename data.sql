@@ -31,13 +31,13 @@ CREATE TABLE users (
     is_admin boolean DEFAULT false NOT NULL
 );
 
-INSERT INTO companies
-    VALUES ('goog', 'Google', 5000, 'Largest search engine', 'www.google.com'),
-           ('appl', 'Apple', 2000, 'Maker of Macintosh', 'www.apple.com');
+-- INSERT INTO companies
+--     VALUES ('goog', 'Google', 5000, 'Largest search engine', 'www.google.com'),
+--            ('appl', 'Apple', 2000, 'Maker of Macintosh', 'www.apple.com');
 
-INSERT INTO jobs
-    VALUES (1, 'SWE', 125000.50, 0.01, 'goog'),
-           (2, 'RE', 110000, 0.02, 'goog'),
-           (3, 'UXD', 115000, 0.03, 'goog'),
-           (4, 'UXD', 99000.30, 0.05, 'appl'),
-           (5, 'CE', 145000, 0.1, 'appl');
+-- INSERT INTO jobs
+--     VALUES (1, 'SWE', 125000.50, 0.01, 'goog'),
+--            (2, 'RE', 110000, 0.02, 'goog'),
+--            (3, 'UXD', 115000, 0.03, 'goog'),
+--            (4, 'UXD', 99000.30, 0.05, 'appl'),
+--            (5, 'CE', 145000, 0.1, 'appl');
