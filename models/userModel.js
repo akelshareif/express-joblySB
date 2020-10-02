@@ -2,7 +2,8 @@ const db = require('../db');
 const ExpressError = require('../helpers/expressError');
 const partialUpdate = require('../helpers/partialUpdate');
 const bcrypt = require('bcrypt');
-const { BCRYPT_WORK_FACTOR } = require('../config');
+const jwt = require('jsonwebtoken');
+const { BCRYPT_WORK_FACTOR, SECRET_KEY } = require('../config');
 
 /** Class containing CRUD methods for users table */
 
@@ -98,6 +99,30 @@ class User {
         return {
             message: `User with username of ${username} was deleted.`,
         };
+    }
+
+    static async authenticate({ username, password }) {
+        // Authenticates a user with matching username and password
+        // Returns token if valid or 400 error if invalid
+
+        const res = await db.query(
+            `SELECT password, is_admin FROM users
+             WHERE username=$1`,
+            [username]
+        );
+
+        if (res.rows.length === 0) {
+            throw new ExpressError(`Error: No user found with given username of ${username}.`, 404);
+        }
+
+        const userInDB = res.rows[0];
+
+        if (await bcrypt.compare(password, userInDB.password)) {
+            const token = jwt.sign({ username, is_admin: userInDB.is_admin }, SECRET_KEY);
+            return token;
+        } else {
+            throw new ExpressError('Error: Invalid username/password.', 400);
+        }
     }
 }
 

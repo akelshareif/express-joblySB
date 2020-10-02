@@ -14,13 +14,17 @@ app.use(express.json());
 app.use(morgan('tiny'));
 
 // routes
+const { authenticateJWT } = require('./middleware/auth');
 const companyRoutes = require('./routes/companies');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
+const loginRoute = require('./routes/login');
 
+app.use(authenticateJWT);
 app.use('/companies', companyRoutes);
 app.use('/jobs', jobRoutes);
 app.use('/users', userRoutes);
+app.use(loginRoute);
 
 /** 404 handler */
 

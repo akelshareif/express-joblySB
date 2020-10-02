@@ -3,8 +3,9 @@ const router = new express.Router();
 const jsonschema = require('jsonschema');
 const companySchema = require('../schemas/companySchema.json');
 const Company = require('../models/companyModel');
+const { ensureLoggedIn, ensureAdmin } = require('../middleware/auth');
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
     try {
         const companies = await Company.getAll(req.query);
         return res.status(200).json({ companies });
@@ -13,7 +14,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', ensureAdmin, async (req, res, next) => {
     try {
         const result = jsonschema.validate(req.body, companySchema);
         if (!result.valid) {
@@ -31,7 +32,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/:handle', async (req, res, next) => {
+router.get('/:handle', ensureLoggedIn, async (req, res, next) => {
     try {
         const company = await Company.getOne(req.params.handle);
 
@@ -41,7 +42,7 @@ router.get('/:handle', async (req, res, next) => {
     }
 });
 
-router.patch('/:handle', async (req, res, next) => {
+router.patch('/:handle', ensureAdmin, async (req, res, next) => {
     try {
         const result = jsonschema.validate(req.body, companySchema);
         if (!result.valid) {
@@ -58,7 +59,7 @@ router.patch('/:handle', async (req, res, next) => {
     }
 });
 
-router.delete('/:handle', async (req, res, next) => {
+router.delete('/:handle', ensureAdmin, async (req, res, next) => {
     try {
         const result = await Company.remove(req.params.handle);
 

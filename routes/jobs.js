@@ -3,8 +3,9 @@ const router = new express.Router();
 const jsonschema = require('jsonschema');
 const jobSchema = require('../schemas/jobSchema.json');
 const Job = require('../models/jobModel');
+const { ensureLoggedIn, ensureAdmin } = require('../middleware/auth');
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
     try {
         const jobs = await Job.getAll(req.query);
         return res.status(200).json({ jobs });
@@ -13,7 +14,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', ensureAdmin, async (req, res, next) => {
     try {
         const result = jsonschema.validate(req.body, jobSchema);
         if (!result.valid) {
@@ -31,7 +32,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     try {
         const job = await Job.getOne(req.params.id);
 
@@ -41,7 +42,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', ensureAdmin, async (req, res, next) => {
     try {
         const result = jsonschema.validate(req.body, jobSchema);
         if (!result.valid) {
@@ -58,7 +59,7 @@ router.patch('/:id', async (req, res, next) => {
     }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ensureAdmin, async (req, res, next) => {
     try {
         const result = await Job.remove(req.params.id);
 

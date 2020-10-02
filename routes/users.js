@@ -3,6 +3,7 @@ const router = new express.Router();
 const jsonschema = require('jsonschema');
 const userSchema = require('../schemas/userSchema.json');
 const User = require('../models/userModel');
+const { ensureCorrectUser } = require('../middleware/auth');
 
 router.get('/', async (req, res, next) => {
     try {
@@ -23,9 +24,10 @@ router.post('/', async (req, res, next) => {
             });
         }
 
-        const user = await User.create(req.body);
+        await User.create(req.body);
+        const token = await User.authenticate(req.body);
 
-        return res.status(201).json({ user });
+        return res.status(201).json({ token });
     } catch (e) {
         return next(e);
     }
@@ -41,7 +43,7 @@ router.get('/:username', async (req, res, next) => {
     }
 });
 
-router.patch('/:username', async (req, res, next) => {
+router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
     try {
         const result = jsonschema.validate(req.body, userSchema);
         if (!result.valid) {
@@ -56,7 +58,7 @@ router.patch('/:username', async (req, res, next) => {
     } catch (e) {}
 });
 
-router.delete('/:username', async (req, res, next) => {
+router.delete('/:username', ensureCorrectUser, async (req, res, next) => {
     try {
         const result = await User.remove(req.params.username);
 
